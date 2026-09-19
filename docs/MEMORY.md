@@ -49,6 +49,14 @@
 6. **StaticFiles mount "/"** sabse last mein karo, warna `/api/*` routes chha jaate.
 7. **User workflow:** pehle MD planning approve, phir code. Deploy kabhi bina poochhe nahi.
    Sirf relevant skills use karo, saare nahi.
+8. **JS: `const Audio = ...` kabhi nahi** — browser ka built-in `Audio` constructor shadow
+   hota hai aur `new Audio()` TDZ ReferenceError deta hai → pura script mar jata hai,
+   nav/UI dead. Naam `Player` use karo (`new window.Audio()`).
+9. **CSS: `[hidden] { display: none !important }` zaroori hai** — wrna display:flex
+   wali overlay classes (`.mx`, `.mini-player`) hidden attribute override kar ke
+   dashboard chhupa deti hain.
+10. **PWA debugging:** service worker purana JS cache kar sakta hai — test se pehle
+    hard refresh (Cmd+Shift+R) ya DevTools > Application > Service Workers > Unregister.
 
 ## User Preferences
 
