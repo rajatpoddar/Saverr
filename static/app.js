@@ -57,9 +57,12 @@ async function api(path, opts) {
 
 /* ================================================================
    AUDIO ENGINE — single global <audio>, queue, auto-advance
+   NOTE: "Audio" naam mat use karna — browser ka built-in constructor
+   shadow hota hai aur `new Audio()` TDZ ReferenceError deta hai
+   (pura script mar jata tha, nav dead — yehi bug tha)
 ================================================================ */
-const Audio = {
-  el: new Audio(),
+const Player = {
+  el: new window.Audio(),
   queue: [],
   index: -1,
   load(items, index) {
@@ -82,11 +85,11 @@ const Audio = {
   next() { if (this.index < this.queue.length - 1) { this.index++; this.playCurrent(); } },
   prev() { if (this.index > 0) { this.index--; this.playCurrent(); } },
 };
-Audio.el.addEventListener("ended", () => Audio.next());
-Audio.el.addEventListener("play", () => setPlayIcons(true));
-Audio.el.addEventListener("pause", () => setPlayIcons(false));
-Audio.el.addEventListener("timeupdate", () => {
-  const d = Audio.el.duration || 0, c = Audio.el.currentTime || 0;
+Player.el.addEventListener("ended", () => Player.next());
+Player.el.addEventListener("play", () => setPlayIcons(true));
+Player.el.addEventListener("pause", () => setPlayIcons(false));
+Player.el.addEventListener("timeupdate", () => {
+  const d = Player.el.duration || 0, c = Player.el.currentTime || 0;
   const pct = d ? (c / d) * 100 : 0;
   $("#np-seek").value = pct; $("#np-cur").textContent = fmtDur(c);
   $("#np-dur").textContent = fmtDur(d);
@@ -96,7 +99,7 @@ function setPlayIcons(playing) {
   $("#mini-play-ic").innerHTML = `<path d="${ic}"/>`;
   $("#np-play-ic").innerHTML = `<path d="${ic}"/>`;
 }
-function currentTrack() { return Audio.queue[Audio.index] || null; }
+function currentTrack() { return Player.queue[Player.index] || null; }
 
 function renderMini() {
   const item = currentTrack();
@@ -113,16 +116,15 @@ function renderNowPlaying() {
   $("#np-art").src = `/api/thumb/${item.id}`;
   $("#np-title").textContent = item.title || "Untitled";
   $("#np-sub").textContent = [item.uploader, fmtDur(item.duration)].filter(Boolean).join(" · ");
-}
-$("#mini-play").onclick = () => Audio.toggle();
-$("#mini-next").onclick = () => Audio.next();
-$("#mini-prev").onclick = () => Audio.prev();
-$("#np-play").onclick = () => Audio.toggle();
-$("#np-next").onclick = () => Audio.next();
-$("#np-prev").onclick = () => Audio.prev();
+}$( "#mini-play").onclick = () => Player.toggle();
+$("#mini-next").onclick = () => Player.next();
+$("#mini-prev").onclick = () => Player.prev();
+$("#np-play").onclick = () => Player.toggle();
+$("#np-next").onclick = () => Player.next();
+$("#np-prev").onclick = () => Player.prev();
 $("#np-seek").oninput = (e) => {
-  const d = Audio.el.duration || 0;
-  if (d) Audio.el.currentTime = (e.target.value / 100) * d;
+  const d = Player.el.duration || 0;
+  if (d) Player.el.currentTime = (e.target.value / 100) * d;
 };
 $("#mini-player").addEventListener("click", (e) => {
   if (e.target.closest("button")) return;
@@ -348,7 +350,7 @@ async function loadMusic() {
       const row = document.createElement("div");
       row.className = "song-row";
       const cur = currentTrack();
-      const playing = cur && cur.id === m.id && !Audio.el.paused;
+      const playing = cur && cur.id === m.id && !Player.el.paused;
       row.innerHTML = `
         <img class="song-art" src="/api/thumb/${m.id}" alt=""
              onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 24 24%22 fill=%22%23334155%22><path d=%22M9 18V5l12-2v13%22/><circle cx=%226%22 cy=%2218%22 r=%223%22/><circle cx=%2218%22 cy=%2216%22 r=%223%22/></svg>'">
@@ -357,7 +359,7 @@ async function loadMusic() {
           <div class="song-sub">${escapeHtml((m.tags || []).slice(0, 3).join(", ") || m.uploader || "")}</div>
         </div>
         <div class="song-dur">${fmtDur(m.duration)}</div>`;
-      row.onclick = () => Audio.load(data.items, i);
+      row.onclick = () => Player.load(data.items, i);
       list.appendChild(row);
     });
     renderMini();
@@ -633,7 +635,7 @@ async function openPlayer(m) {
   const isAudio = m.mode === "audio" || ["mp3", "m4a"].includes((m.ext || "").toLowerCase());
   if (isAudio) {
     // route through music player
-    Audio.load([m], 0);
+    Player.load([m], 0);
     $("#np-sheet").hidden = false;
     renderNowPlaying();
     return;
