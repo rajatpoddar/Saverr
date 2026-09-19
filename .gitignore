@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# Local runtime data
+local-data/
+local-media/
+*.db
+*.db-journal
+
+# Env & secrets
+.env
+.env.*
+*_cookies.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# Logs
+*.log
+nohup.out
+
+# Node (agar kabhi tooling chahiye ho)
+node_modules/

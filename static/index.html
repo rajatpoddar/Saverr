@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#0f172a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SaverR">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="apple-touch-icon" href="/icons/icon-180.png">
+<link rel="icon" href="/icons/icon-192.png">
+<title>SaverR</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<!-- ================= ADD VIEW ================= -->
+<main id="view-add" class="view active">
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg></span>
+      SaverR
+    </div>
+    <div class="conn" id="conn-badge"><span class="dot"></span><span id="conn-text">LAN</span></div>
+  </header>
+
+  <section class="card">
+    <label class="lbl" for="url">Video / Reel link</label>
+    <div class="url-row">
+      <input id="url" type="url" inputmode="url" autocapitalize="off" autocorrect="off"
+             placeholder="https://youtube.com/shorts/…" autocomplete="off">
+      <button id="paste-btn" class="icon-btn" title="Paste" aria-label="Paste from clipboard">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
+      </button>
+    </div>
+
+    <label class="lbl">Category</label>
+    <div class="chips" id="cat-chips"></div>
+
+    <div class="mode-row" role="radiogroup" aria-label="Download type">
+      <button class="mode-btn active" data-mode="video" id="mode-video">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+        Video
+      </button>
+      <button class="mode-btn" data-mode="audio" id="mode-audio">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Audio (MP3)
+      </button>
+    </div>
+
+    <button id="download-btn" class="primary-btn">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      Download
+    </button>
+    <div id="add-msg" class="msg" role="status" aria-live="polite"></div>
+  </section>
+
+  <section class="card" id="downloads-card" hidden>
+    <h2>Downloads</h2>
+    <div id="jobs-list"></div>
+  </section>
+
+  <section class="card mini-stats" id="add-stats"></section>
+</main>
+
+<!-- ================= LIBRARY VIEW ================= -->
+<main id="view-library" class="view">
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" style="color:var(--accent)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></span>
+      Library
+    </div>
+    <input id="search" type="search" placeholder="Search…" autocomplete="off" aria-label="Search library">
+  </header>
+  <div class="chip-scroll" id="filter-chips"></div>
+  <section id="grid" class="grid"></section>
+  <div id="empty" class="empty" hidden>
+    <div class="empty-emoji">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
+    </div>
+    <p>Abhi kuch nahi hai.<br>Pehla video download karo!</p>
+  </div>
+</main>
+
+<!-- ================= STATS VIEW ================= -->
+<main id="view-stats" class="view">
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" style="color:var(--accent)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg></span>
+      Stats
+    </div>
+  </header>
+  <section id="stats-body"></section>
+</main>
+
+<!-- ================= PLAYER SHEET ================= -->
+<div id="player-sheet" class="sheet" hidden>
+  <div class="sheet-backdrop" id="sheet-backdrop"></div>
+  <div class="sheet-body">
+    <div class="sheet-handle"></div>
+    <div id="player-wrap"></div>
+    <h3 id="player-title"></h3>
+    <div class="player-meta" id="player-meta"></div>
+    <div class="player-actions">
+      <a id="dl-file" class="action-btn" download>
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Save offline
+      </a>
+      <button id="delete-btn" class="action-btn danger">
+        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= BOTTOM NAV ================= -->
+<nav class="bottomnav">
+  <button class="nav-btn active" data-view="add" aria-label="Add download">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+    Add
+  </button>
+  <button class="nav-btn" data-view="library" aria-label="Library">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+    Library
+  </button>
+  <button class="nav-btn" data-view="stats" aria-label="Statistics">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
+    Stats
+  </button>
+</nav>
+
+<div id="toast" class="toast" hidden></div>
+<script src="/app.js"></script>
+</body>
+</html>

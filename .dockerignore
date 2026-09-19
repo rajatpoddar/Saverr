@@ -1,0 +1,33 @@
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__
+*.py[cod]
+.venv
+venv
+
+# Local runtime data (NAS pe volumes alag se mount hote hain)
+local-data
+local-media
+*.db
+*.db-journal
+
+# Env & secrets
+.env
+.env.*
+*_cookies.txt
+
+# Docs (image mein nahi chahiye)
+docs
+PLAN.md
+README.md
+
+# OS
+.DS_Store
+*.log
+nohup.out
+
+# Build context slim rakho
+scripts

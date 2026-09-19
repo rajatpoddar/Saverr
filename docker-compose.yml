@@ -1,0 +1,21 @@
+services:
+  saverr:
+    build: .
+    container_name: saverr
+    restart: unless-stopped
+    # files Rajat user ke naam se banenge (NAS/SMB friendly)
+    user: "1026:100"
+    ports:
+      - "8508:8000"
+    volumes:
+      # Jellyfin video library ke andar — wahan bhi auto dikhega
+      - /volume1/video/saverr:/media
+      # SQLite DB + thumbs + cookies
+      - /volume1/docker/saverr/data:/data
+    environment:
+      - TUNNEL_URL=${TUNNEL_URL:-}
+    deploy:
+      resources:
+        limits:
+          memory: 1g
+          cpus: "1.5"
