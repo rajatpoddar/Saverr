@@ -20,6 +20,9 @@
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 html, body { margin: 0; padding: 0; }
+/* CRITICAL: hidden attribute hamesha jeete — wrna .mx/.mini-player jaise
+   display:flex wale classes overlay ban ke dashboard chhupa dete hain */
+[hidden] { display: none !important; }
 body {
   background: var(--bg);
   color: var(--text);
@@ -267,7 +270,8 @@ button, .chip, .tile, .action-btn, .nav-btn, .icon-btn, .mode-btn { cursor: poin
   display: flex; align-items: center; justify-content: center; }
 
 /* ---------- reels ---------- */
-.reels-view { padding: 0 !important; display: flex; flex-direction: column; height: 100dvh; }
+.reels-view { position: relative; padding: 0 !important; flex-direction: column; height: 100dvh; }
+.reels-view.active { display: flex; }
 .reels-chips { position: absolute; top: calc(env(safe-area-inset-top) + 10px); left: 0; right: 0;
   z-index: 10; padding: 0 14px; }
 .reels-chips .chip { background: rgba(15,23,42,.7); backdrop-filter: blur(8px); }
