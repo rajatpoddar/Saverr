@@ -19,12 +19,18 @@ macOS SSL fix (certifi) bhi script handle karta hai.
 
 - **Download**: YouTube Shorts, Instagram Reels, + yt-dlp ke 1700+ sites
 - **Video (h264/aac — mobile-compatible) ya Audio (MP3)**
+- **Personal Music Player** — mood playlists (80s, 90s, party, focus…), mini player + Now Playing
+- **Reels Feed** — Instagram-jaisi full-screen swipe, autoplay
+- **Movies** — Netflix-jaisa browse + MX-player controls
+- **Tag hierarchy** — songs → moods sub-tags; har item multi-tag; tag manager UI
 - **Categories** (15) — files category folders mein, Jellyfin mein auto-dikhta hai
 - **Live progress** — %, speed, ETA; 2 parallel downloads
-- **Library** — thumbnails, category filter, search, seek-able streaming
+- **Library** — thumbnails, tag filter, search, seek-able streaming
 - **Offline save** — browser download button se phone mein save
 - **PWA** — iPhone/Android pe "Add to Home Screen" → full-screen app
 - **LAN + Cloudflare Tunnel** auto-detect
+
+**Roadmap:** progress bar overhaul (phases) · torrent support (qBittorrent sidecar) · Jellyfin folder browser — [docs/TASKS.md](docs/TASKS.md)
 
 ## Stack
 

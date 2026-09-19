@@ -30,6 +30,9 @@
 | 2026-09-20 | 4 content views: Music (basic player), Reels (insta-style), Movies (netflix-style + MX player), Add | SaverR = personal entertainment platform |
 | 2026-09-20 | Paste → preview → audio/video select flow | User explicitly manga — link paste ke baad type choose ho |
 | 2026-09-20 | Repo: github.com/rajatpoddar/Saverr.git | Official remote |
+| 2026-09-20 | PLAN.md delete — PRD.md source of truth | Docs consolidate, ek hi jagah |
+| 2026-09-20 | Torrent = qBittorrent sidecar container (WebUI API), khud engine NAHI | qbt mature hai; repo ref: github.com/qbittorrent/qBittorrent — internal network only, no host port |
+| 2026-09-20 | Progress fix: phases (probing→downloading→merging) + monotonic weighted % | User reported: bar bounce/stuck issue (dual-stream download + fragment streams) |
 
 ## Lessons Learned (Gotchas)
 
@@ -59,6 +62,16 @@
 
 ## Open Questions
 
-- New repo URL? (user create kar raha hai)
 - Cloudflare tunnel domain kaunsa hoga? (user dashboard se add karega)
 - Feed autoplay: muted-by-default theek hai ya sound-on first tap?
+- Torrent downloads kis category me jayen by default? (movies?)
+
+## v1.6 Implementation Notes
+
+- 16 seed tags hierarchy ke saath — 'songs' ke 11 mood children; descendant filter test pass
+- Audio engine: single global <audio>, queue + auto-advance, mini player + Now Playing sheet
+- Reels: IntersectionObserver (0.6 threshold) autoplay/pause; snap-scroll 100dvh
+- Movies: hero = latest video; rows = first-tag grouping; MX sheet ±10s
+- Library player sheet me tag add/remove (chips, × to remove)
+- Tag manager: library header gear icon se — parent select, rename (prompt), delete (confirm)
+- Known pending: progress bar phases (R11), torrent (R12), Jellyfin browser (R2), NAS deploy
