@@ -33,11 +33,13 @@ async def _worker():
             queue.task_done()
             continue
         job["status"] = "downloading"
-        await engine.run_download(job_id, job["url"], job["category"], job["mode"])
+        await engine.run_download(job_id, job["url"], job["category"], job["mode"],
+                                  tags=job.get("tags"))
         if job.get("status") == "done":
+            media_id = uuidlib.uuid4().hex[:12]
             try:
                 await dbm.add_media({
-                    "id": uuidlib.uuid4().hex[:12],
+                    "id": media_id,
                     "url": job["url"],
                     "category": job["category"],
                     "mode": job["mode"],
@@ -50,6 +52,13 @@ async def _worker():
                     "extractor": job.get("extractor"),
                     "thumbnail": job.get("thumbnail"),
                 })
+                tag_names = list(job.get("tags") or [])
+                if job.get("category") and job["category"] != "other":
+                    tag_names.append(job["category"])
+                if tag_names:
+                    await dbm.set_media_tags(
+                        media_id, tag_names,
+                        kind="audio" if job["mode"] == "audio" else "video")
             except Exception as e:
                 job["status"] = "error"
                 job["error"] = f"db: {e}"
@@ -87,6 +96,7 @@ def _job_view(job_id: str, job: dict) -> dict:
         "error": job.get("error"),
         "title": job.get("title"),
         "filename": job.get("filename"),
+        "tags": job.get("tags"),
     }
 
 
@@ -103,6 +113,7 @@ async def create_download(body: dict):
     url = (body.get("url") or "").strip()
     category = (body.get("category") or "other").lower().strip()
     mode = (body.get("mode") or "video").lower().strip()
+    tags = [str(t).strip().lower()[:40] for t in (body.get("tags") or []) if str(t).strip()][:10]
     if not url.startswith(("http://", "https://")):
         raise HTTPException(400, "Invalid URL")
     if category not in engine.CATEGORIES:
@@ -120,12 +131,81 @@ async def create_download(body: dict):
 
     job_id = uuidlib.uuid4().hex[:12]
     engine.JOBS[job_id] = {
-        "url": url, "category": category, "mode": mode,
+        "url": url, "category": category, "mode": mode, "tags": tags,
         "status": "queued", "progress": 0,
     }
     await queue.put(job_id)
     qpos = queue.qsize()
     return {"job_id": job_id, "queued_behind": qpos, "duplicate": False}
+
+
+@app.get("/api/probe")
+async def probe_url(url: str):
+    """Paste-preview: light metadata fetch (no download)."""
+    if not url.startswith(("http://", "https://")):
+        raise HTTPException(400, "Invalid URL")
+    meta = await engine.probe(url)
+    if not meta:
+        raise HTTPException(422, "Link se info nahi mili — supported site hai kya?")
+    existing_v = await dbm.find_by_url(url, "video")
+    existing_a = await dbm.find_by_url(url, "audio")
+    meta["saved_video"] = bool(existing_v)
+    meta["saved_audio"] = bool(existing_a)
+    return meta
+
+
+# ---------------------------------------------------------------- tags API
+@app.get("/api/tags")
+async def tags_list():
+    return await dbm.list_tags()
+
+
+@app.post("/api/tags")
+async def tags_create(body: dict):
+    name = (body.get("name") or "").strip().lower().replace(" ", "-")[:40]
+    if not name:
+        raise HTTPException(400, "Tag name chahiye")
+    if await dbm.get_tag_by_name(name):
+        raise HTTPException(409, "Tag pehle se hai")
+    parent = body.get("parent")
+    parent_id = None
+    kind = body.get("kind")
+    if parent:
+        prow = await dbm.get_tag_by_name(parent)
+        if not prow:
+            raise HTTPException(404, f"Parent tag '{parent}' nahi mila")
+        parent_id = prow["id"]
+        kind = prow["kind"]  # child inherits kind
+    if kind not in ("audio", "video", None):
+        kind = None
+    tag_id = await dbm.add_tag(name, parent_id, kind)
+    return {"id": tag_id, "name": name, "parent": parent, "kind": kind}
+
+
+@app.patch("/api/tags/{tag_id}")
+async def tags_rename(tag_id: int, body: dict):
+    new_name = (body.get("name") or "").strip().lower().replace(" ", "-")[:40]
+    if not new_name:
+        raise HTTPException(400, "Naya naam chahiye")
+    await dbm.rename_tag(tag_id, new_name)
+    return {"ok": True}
+
+
+@app.delete("/api/tags/{tag_id}")
+async def tags_delete(tag_id: int):
+    deleted = await dbm.delete_tag(tag_id)
+    return {"deleted": deleted}
+
+
+@app.post("/api/media/{media_id}/tags")
+async def media_tags_set(media_id: str, body: dict):
+    row = await dbm.get_media(media_id)
+    if not row:
+        raise HTTPException(404, "Media nahi mila")
+    tag_names = [str(t) for t in (body.get("tags") or [])][:15]
+    kind = "audio" if row["mode"] == "audio" else "video"
+    await dbm.set_media_tags(media_id, tag_names, kind=kind)
+    return {"tags": await dbm.get_media_tag_names(media_id)}
 
 
 @app.get("/api/jobs")
@@ -142,8 +222,10 @@ async def get_job(job_id: str):
 
 
 @app.get("/api/media")
-async def media_list(category: str = "all", q: str = ""):
-    items = await dbm.list_media(category or None, q or None)
+async def media_list(category: str = "all", q: str = "",
+                     kind: str = "", tag: str = ""):
+    items = await dbm.list_media(category or None, q or None,
+                                 kind or None, tag or None)
     return {"count": len(items), "items": items}
 
 

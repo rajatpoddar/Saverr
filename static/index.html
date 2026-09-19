@@ -34,21 +34,32 @@
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/></svg>
       </button>
     </div>
+    <div id="probe-status" class="msg"></div>
+  </section>
 
-    <label class="lbl">Category</label>
-    <div class="chips" id="cat-chips"></div>
-
-    <div class="mode-row" role="radiogroup" aria-label="Download type">
-      <button class="mode-btn active" data-mode="video" id="mode-video">
+  <!-- preview card -->
+  <section class="card" id="preview-card" hidden>
+    <div class="preview">
+      <img id="preview-thumb" alt="">
+      <div class="preview-info">
+        <div id="preview-title" class="preview-title"></div>
+        <div id="preview-meta" class="preview-meta"></div>
+      </div>
+    </div>
+    <div class="mode-row" role="radiogroup" aria-label="Save as">
+      <button class="mode-btn" data-mode="audio" id="mode-audio">
+        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+        Audio
+      </button>
+      <button class="mode-btn" data-mode="video" id="mode-video">
         <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 8-6 4 6 4V8Z"/><rect width="14" height="12" x="2" y="6" rx="2"/></svg>
         Video
       </button>
-      <button class="mode-btn" data-mode="audio" id="mode-audio">
-        <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-        Audio (MP3)
-      </button>
     </div>
-
+    <label class="lbl">Category folder</label>
+    <div class="chips" id="cat-chips"></div>
+    <label class="lbl">Tags <span class="lbl-hint">(multi-select)</span></label>
+    <div class="chips" id="tag-chips"></div>
     <button id="download-btn" class="primary-btn">
       <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Download
@@ -62,6 +73,35 @@
   </section>
 
   <section class="card mini-stats" id="add-stats"></section>
+</main>
+
+<!-- ================= MUSIC VIEW ================= -->
+<main id="view-music" class="view">
+  <header class="topbar">
+    <div class="brand"><span class="logo" style="color:var(--accent)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></span>Music</div>
+    <input id="music-search" type="search" placeholder="Search…" autocomplete="off" aria-label="Search music">
+  </header>
+  <div class="chip-scroll" id="music-chips"></div>
+  <div id="song-list" class="song-list"></div>
+  <div id="music-empty" class="empty" hidden>
+    <div class="empty-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg></div>
+    <p>Abhi koi audio nahi hai.<br>Add se podcast/song save karo!</p>
+  </div>
+</main>
+
+<!-- ================= REELS VIEW ================= -->
+<main id="view-reels" class="view reels-view">
+  <div class="chip-scroll reels-chips" id="reels-chips"></div>
+  <div id="reels-track" class="reels-track"></div>
+  <div id="reels-empty" class="empty" hidden>
+    <div class="empty-emoji"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5 7 3"/><path d="m17 3-4 4.5"/><path d="M21 12h-8"/></svg></div>
+    <p>Reels nahi mile. Reel save karo pehle!</p>
+  </div>
+</main>
+
+<!-- ================= MOVIES VIEW ================= -->
+<main id="view-movies" class="view">
+  <div id="movies-body"></div>
 </main>
 
 <!-- ================= LIBRARY VIEW ================= -->
@@ -83,18 +123,76 @@
   </div>
 </main>
 
-<!-- ================= STATS VIEW ================= -->
-<main id="view-stats" class="view">
-  <header class="topbar">
-    <div class="brand">
-      <span class="logo" style="color:var(--accent)"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg></span>
-      Stats
-    </div>
-  </header>
-  <section id="stats-body"></section>
-</main>
+<!-- ================= MINI PLAYER (global, music) ================= -->
+<div id="mini-player" class="mini-player" hidden>
+  <img id="mini-art" alt="">
+  <div class="mini-info">
+    <div id="mini-title" class="mini-title"></div>
+    <div id="mini-sub" class="mini-sub"></div>
+  </div>
+  <button id="mini-prev" class="icon-btn sm" aria-label="Previous">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+  </button>
+  <button id="mini-play" class="icon-btn sm" aria-label="Play/Pause">
+    <svg id="mini-play-ic" viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+  <button id="mini-next" class="icon-btn sm" aria-label="Next">
+    <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+  </button>
+</div>
 
-<!-- ================= PLAYER SHEET ================= -->
+<!-- ================= NOW PLAYING SHEET ================= -->
+<div id="np-sheet" class="sheet" hidden>
+  <div class="sheet-backdrop" id="np-backdrop"></div>
+  <div class="sheet-body np-body">
+    <div class="sheet-handle"></div>
+    <img id="np-art" alt="">
+    <div id="np-title" class="np-title"></div>
+    <div id="np-sub" class="np-sub"></div>
+    <input id="np-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
+    <div class="np-times"><span id="np-cur">0:00</span><span id="np-dur">0:00</span></div>
+    <div class="np-controls">
+      <button id="np-prev" class="np-btn" aria-label="Previous">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+      </button>
+      <button id="np-play" class="np-btn big" aria-label="Play/Pause">
+        <svg id="np-play-ic" viewBox="0 0 24 24" width="34" height="34" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button id="np-next" class="np-btn" aria-label="Next">
+        <svg viewBox="0 0 24 24" width="26" height="26" fill="currentColor" aria-hidden="true"><path d="M16 6h2v12h-2zM6 18l8.5-6L6 6z"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= MX PLAYER SHEET (movies) ================= -->
+<div id="mx-sheet" class="mx" hidden>
+  <video id="mx-video" playsinline></video>
+  <div class="mx-top">
+    <button id="mx-close" class="icon-btn" aria-label="Close player">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+    </button>
+    <div id="mx-title" class="mx-title"></div>
+  </div>
+  <button id="mx-center" class="mx-center" aria-label="Play/Pause">
+    <svg id="mx-play-ic" viewBox="0 0 24 24" width="64" height="64" fill="rgba(255,255,255,.9)" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+  </button>
+  <button id="mx-back10" class="mx-seek mx-left" aria-label="Back 10 seconds">
+    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="11 18 5 12 11 6"/><path d="M5 12h9a5 5 0 1 1 0 10h-2"/></svg>
+    <span>10</span>
+  </button>
+  <button id="mx-fwd10" class="mx-seek mx-right" aria-label="Forward 10 seconds">
+    <svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="13 18 19 12 13 6"/><path d="M19 12h-9a5 5 0 1 0 0 10h2"/></svg>
+    <span>10</span>
+  </button>
+  <div class="mx-bottom">
+    <span id="mx-cur">0:00</span>
+    <input id="mx-seek" type="range" min="0" max="100" value="0" step="0.1" aria-label="Seek">
+    <span id="mx-dur">0:00</span>
+  </div>
+</div>
+
+<!-- ================= SIMPLE PLAYER SHEET (library) ================= -->
 <div id="player-sheet" class="sheet" hidden>
   <div class="sheet-backdrop" id="sheet-backdrop"></div>
   <div class="sheet-body">
@@ -102,6 +200,12 @@
     <div id="player-wrap"></div>
     <h3 id="player-title"></h3>
     <div class="player-meta" id="player-meta"></div>
+    <label class="lbl">Tags</label>
+    <div class="chips" id="player-tags"></div>
+    <div class="tag-add-row">
+      <input id="player-tag-input" type="text" placeholder="naya tag…" autocomplete="off">
+      <button id="player-tag-add" class="icon-btn">Add</button>
+    </div>
     <div class="player-actions">
       <a id="dl-file" class="action-btn" download>
         <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -115,19 +219,42 @@
   </div>
 </div>
 
+<!-- ================= TAG MANAGE SHEET ================= -->
+<div id="tagmgr-sheet" class="sheet" hidden>
+  <div class="sheet-backdrop" id="tagmgr-backdrop"></div>
+  <div class="sheet-body">
+    <div class="sheet-handle"></div>
+    <h3 style="margin:4px 0 10px">Tag manage</h3>
+    <div class="tag-add-row">
+      <input id="tagmgr-name" type="text" placeholder="naya tag…" autocomplete="off">
+      <select id="tagmgr-parent" aria-label="Parent tag"></select>
+      <button id="tagmgr-add" class="icon-btn">Add</button>
+    </div>
+    <div id="tagmgr-list" class="tagmgr-list"></div>
+  </div>
+</div>
+
 <!-- ================= BOTTOM NAV ================= -->
 <nav class="bottomnav">
   <button class="nav-btn active" data-view="add" aria-label="Add download">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
     Add
   </button>
+  <button class="nav-btn" data-view="music" aria-label="Music">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
+    Music
+  </button>
+  <button class="nav-btn" data-view="reels" aria-label="Reels">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M7 3v18"/><path d="M3 7.5 7 3"/><path d="m17 3-4 4.5"/></svg>
+    Reels
+  </button>
+  <button class="nav-btn" data-view="movies" aria-label="Movies">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="m7 3v18"/><path d="M3 7.5 7 3"/><path d="m17 3-4 4.5"/><path d="M21 12h-8"/></svg>
+    Movies
+  </button>
   <button class="nav-btn" data-view="library" aria-label="Library">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
     Library
-  </button>
-  <button class="nav-btn" data-view="stats" aria-label="Statistics">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" x2="12" y1="20" y2="10"/><line x1="18" x2="18" y1="20" y2="4"/><line x1="6" x2="6" y1="20" y2="16"/></svg>
-    Stats
   </button>
 </nav>
 

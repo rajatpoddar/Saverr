@@ -90,7 +90,7 @@ async def probe(url: str) -> dict | None:
 
 
 async def run_download(job_id: str, url: str, category: str, mode: str,
-                       title_hint: str | None = None):
+                       title_hint: str | None = None, tags: list[str] | None = None):
     """Blocking download executed in a worker. Updates JOBS[job_id]."""
     job = JOBS[job_id]
     try:
@@ -156,6 +156,7 @@ async def run_download(job_id: str, url: str, category: str, mode: str,
             "filesize": fp.stat().st_size, "duration": duration,
             "uploader": uploader, "extractor": extractor,
             "thumbnail": thumbnail, "title": (meta or {}).get("title") or title,
+            "tags": tags or [],
         })
     except Exception as e:
         job.update({"status": "error", "error": str(e)[:500]})
